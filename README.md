@@ -38,8 +38,9 @@ Use get_job_log with a job_id to see the logs.
 |-----------|------|---------|-------------|
 | `project_id` | string | — | GitLab project path или numeric ID |
 | `job_id` | integer | — | Job ID |
-| `offset` | integer | `0` | С какой строки начать (0-based) |
-| `limit` | integer | `100` | Сколько строк вернуть (max `500`) |
+| `tail` | boolean | `false` | Вернуть последние N строк (N=limit). Полезно чтобы увидеть конец лога, не зная его длины |
+| `offset` | integer | `0` | С какой строки начать (0-based). Игнорируется при `tail=true` |
+| `limit` | integer | `100` | Сколько строк вернуть (max `500`). При `tail=true` — сколько строк с конца |
 
 **Пример ответа:**
 ```
@@ -72,8 +73,9 @@ Total filtered lines: 898
 ## Workflow для AI-агента
 
 1. **`get_mr_failed_jobs`** — узнать какие джобы упали и их `job_id`
-2. **`get_job_log(offset=0, limit=200)`** — прочитать начало лога
-3. **`get_job_log(offset=200, limit=200)`** — продолжить если нужно
+2. **`get_job_log(tail=true, limit=100)`** — прочитать последние строки лога, где обычно видна ошибка
+3. **`get_job_log(offset=0, limit=200)`** — прочитать начало лога если нужно
+4. **`get_job_log(offset=200, limit=200)`** — продолжить если нужно
 
 Так агент контролирует потребление контекста и не перегружает модель огромными логами.
 
